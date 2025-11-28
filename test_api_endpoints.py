@@ -12,7 +12,7 @@ os.environ['GEMINI_API_KEY'] = 'test-key'
 os.environ['ENABLE_GEMINI_AI'] = 'true'
 os.environ['ALLOWED_ORIGINS'] = 'http://localhost:3000'
 
-from streamlit_backend.api.main import app
+from main import app
 
 client = TestClient(app)
 
@@ -97,7 +97,7 @@ class TestPatternMiningEndpoint:
 class TestAIInsightsEndpoint:
     """Test new AI insights endpoint"""
     
-    @patch('streamlit_backend.api.main.gemini_service')
+    @patch('main.gemini_service')
     def test_ai_insights_with_gemini(self, mock_service):
         """Test AI insights when Gemini is available"""
         mock_service.is_available.return_value = True
@@ -118,7 +118,7 @@ class TestAIInsightsEndpoint:
         assert data['source'] == 'gemini_ai'
         assert data['success']
     
-    @patch('streamlit_backend.api.main.gemini_service')
+    @patch('main.gemini_service')
     def test_ai_insights_fallback_to_ml(self, mock_service):
         """Test AI insights falls back to ML when Gemini unavailable"""
         mock_service.is_available.return_value = False
@@ -142,7 +142,7 @@ class TestAIInsightsEndpoint:
 class TestQAEndpoint:
     """Test question answering endpoint"""
     
-    @patch('streamlit_backend.api.main.gemini_service')
+    @patch('main.gemini_service')
     def test_qa_with_gemini(self, mock_service):
         """Test QA with Gemini AI"""
         mock_service.is_available.return_value = True
@@ -160,7 +160,7 @@ class TestQAEndpoint:
         assert 'source' in data
         assert data['source'] == 'gemini_ai'
     
-    @patch('streamlit_backend.api.main.gemini_service')
+    @patch('main.gemini_service')
     def test_qa_fallback(self, mock_service):
         """Test QA falls back to ML"""
         mock_service.is_available.return_value = False

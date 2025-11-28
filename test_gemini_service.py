@@ -12,7 +12,7 @@ os.environ['GEMINI_API_KEY'] = 'test-key'
 os.environ['ENABLE_GEMINI_AI'] = 'true'
 os.environ['FALLBACK_TO_ML'] = 'true'
 
-from streamlit_backend.api.gemini_service import GeminiAIService, get_gemini_service
+from gemini_service import GeminiAIService, get_gemini_service
 
 
 class TestGeminiAIService:
@@ -20,10 +20,10 @@ class TestGeminiAIService:
     
     def setup_method(self):
         """Reset singleton before each test"""
-        import streamlit_backend.api.gemini_service as gs
+        import gemini_service as gs
         gs._gemini_service = None
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_initialization_success(self, mock_genai):
         """Test successful initialization with API key"""
         mock_model = Mock()
@@ -52,7 +52,7 @@ class TestGeminiAIService:
         assert not service.is_available()
         os.environ['ENABLE_GEMINI_AI'] = 'true'  # Restore
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_generate_health_insights_success(self, mock_genai):
         """Test successful AI insight generation"""
         mock_model = Mock()
@@ -83,7 +83,7 @@ class TestGeminiAIService:
         assert 'AI-generated' in result['insights']
         assert result['ml_patterns'] == ml_patterns
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_generate_health_insights_api_error(self, mock_genai):
         """Test fallback when Gemini API fails"""
         mock_model = Mock()
@@ -104,7 +104,7 @@ class TestGeminiAIService:
         assert result['success']
         assert 'note' in result
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_answer_health_query_success(self, mock_genai):
         """Test successful QA"""
         mock_model = Mock()
@@ -128,7 +128,7 @@ class TestGeminiAIService:
         
         assert 'disparity' in answer.lower()
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_fallback_to_ml_when_disabled(self, mock_genai):
         """Test that fallback works when AI is explicitly disabled"""
         os.environ['ENABLE_GEMINI_AI'] = 'false'
@@ -151,7 +151,7 @@ class TestGeminiAIService:
         
         assert service1 is service2
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_empty_response_fallback(self, mock_genai):
         """Test fallback when Gemini returns empty response"""
         mock_model = Mock()
@@ -169,7 +169,7 @@ class TestGeminiAIService:
         
         assert result['source'] == 'ml_only'
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_ml_only_analysis_high_disparity(self, mock_genai):
         """Test ML-only analysis correctly identifies high disparity"""
         service = GeminiAIService()
@@ -189,7 +189,7 @@ class TestGeminiAIService:
         assert 'High disparity' in result['insights']
         assert '65.0' in result['insights']
     
-    @patch('streamlit_backend.api.gemini_service.genai')
+    @patch('gemini_service.genai')
     def test_prompt_building(self, mock_genai):
         """Test that prompts are built correctly"""
         mock_model = Mock()
