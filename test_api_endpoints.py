@@ -146,7 +146,10 @@ class TestQAEndpoint:
     def test_qa_with_gemini(self, mock_service):
         """Test QA with Gemini AI"""
         mock_service.is_available.return_value = True
-        mock_service.answer_health_query.return_value = "The disparity is 30%"
+        mock_service.answer_health_query.return_value = {
+            "answer": "The disparity is 30%",
+            "source": "gemini_ai"
+        }
         
         response = client.post("/qa", json={
             "disease": "Cancer",
@@ -182,10 +185,13 @@ class TestCORS:
     
     def test_cors_headers_present(self):
         """Test that CORS headers are present in responses"""
-        response = client.options("/health")
+        response = client.options(
+            "/health",
+            headers={"Origin": "http://localhost:3000"}
+        )
         
         # CORS headers should be present
-        assert 'access-control-allow-origin' in response.headers or response.status_code in [200, 404]
+        assert 'access-control-allow-origin' in response.headers
     
     def test_preflight_request(self):
         """Test preflight OPTIONS request"""

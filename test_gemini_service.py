@@ -125,9 +125,9 @@ class TestGeminiAIService:
             disease='Cancer',
             year=2023
         )
-        
-        assert 'disparity' in answer.lower()
     
+        assert 'disparity' in answer['answer'].lower()
+
     @patch('gemini_service.genai')
     def test_fallback_to_ml_when_disabled(self, mock_genai):
         """Test that fallback works when AI is explicitly disabled"""

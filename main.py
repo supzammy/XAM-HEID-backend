@@ -122,6 +122,9 @@ def filter_endpoint(req: FilterRequest):
     except ValueError as e:
         # Expected validation error from filter_dataset mapping/validation
         raise HTTPException(status_code=400, detail=str(e))
+    except KeyError as e:
+        # Invalid disease name causing column lookup failure
+        raise HTTPException(status_code=400, detail=f"Invalid disease or column: {str(e)}")
     except Exception as e:
         # Unexpected error: include the error text in the response for debugging
         raise HTTPException(status_code=500, detail=str(e))
