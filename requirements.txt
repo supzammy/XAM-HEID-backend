@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pandas
+mlxtend
+scikit-learn
+google-generativeai
+python-dotenv
+pydantic
+pytest
+httpx  # For FastAPI TestClient
