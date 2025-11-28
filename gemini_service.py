@@ -118,7 +118,7 @@ class GeminiAIService:
         context_data: pd.DataFrame,
         disease: str,
         year: Optional[int] = None
-    ) -> str:
+    ) -> Dict[str, str]:
         """
         Answer specific questions about health equity data using AI.
         
@@ -129,10 +129,13 @@ class GeminiAIService:
             year: Year of interest
         
         Returns:
-            AI-generated answer or fallback response
+            Dictionary with answer and source
         """
         if not self.is_available():
-            return self._ml_only_qa(query, context_data, disease, year)
+            return {
+                "answer": self._ml_only_qa(query, context_data, disease, year),
+                "source": "ml_only"
+            }
         
         try:
             # Build context-aware prompt
@@ -141,16 +144,28 @@ class GeminiAIService:
             response = self.model.generate_content(prompt)
             
             if response.text:
-                return response.text
+                return {
+                    "answer": response.text,
+                    "source": "gemini_ai"
+                }
             else:
-                return self._ml_only_qa(query, context_data, disease, year)
+                return {
+                    "answer": self._ml_only_qa(query, context_data, disease, year),
+                    "source": "ml_fallback_empty"
+                }
                 
         except Exception as e:
             logger.error(f"Gemini QA error: {str(e)}")
             if self.fallback_enabled:
-                return self._ml_only_qa(query, context_data, disease, year)
+                return {
+                    "answer": self._ml_only_qa(query, context_data, disease, year),
+                    "source": "ml_fallback_error"
+                }
             else:
-                return f"Error processing query: {str(e)}"
+                return {
+                    "answer": f"Error processing query: {str(e)}",
+                    "source": "error"
+                }
     
     def _build_insight_prompt(
         self,

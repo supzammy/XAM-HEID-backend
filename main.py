@@ -160,17 +160,20 @@ def qa_endpoint(req: QARequest):
 
     # Enhanced: Use Gemini AI if available, otherwise provide basic response
     if gemini_service.is_available():
-        answer = gemini_service.answer_health_query(
+        result = gemini_service.answer_health_query(
             query=req.query,
             context_data=agg_secure,
             disease=req.disease,
             year=req.year
         )
+        answer = result["answer"]
+        source = result["source"]
     else:
         # Fallback: Basic response when Gemini not available
         answer = f"Based on the filtered data for {req.disease} in {req.year}, I found {len(agg_secure)} states with data. {req.query}\n\nNote: Enhanced AI analysis requires Gemini API configuration."
-    
-    return {"answer": answer, "source": "gemini_ai" if gemini_service.is_available() else "ml_only"}
+        source = "ml_only"
+                                                                                                          
+    return {"answer": answer, "source": source}
 
 
 @app.post("/api/ai_insights")
